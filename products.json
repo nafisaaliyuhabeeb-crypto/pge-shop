@@ -1,1 +1,15 @@
-[]
+[
+  {
+    "id": 1,
+    "name": "Jdjxj",
+    "price": 6565,
+    "discount": 56,
+    "category": "Electronics",
+    "desc": "Xjxjxxkxckck",
+    "is_sold_out": false,
+    "image": "https://raw.githubusercontent.com/nafisaaliyuhabeeb-crypto/pge-shop/main/images/1790553868645_0_Screenshot_20260927_094453_com.zhiliaoapp.musically.jpg",
+    "images": [
+      "https://raw.githubusercontent.com/nafisaaliyuhabeeb-crypto/pge-shop/main/images/1790553868645_0_Screenshot_20260927_094453_com.zhiliaoapp.musically.jpg"
+    ]
+  }
+]
