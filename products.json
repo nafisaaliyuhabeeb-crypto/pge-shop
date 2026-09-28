@@ -6,7 +6,7 @@
     "discount": 35,
     "category": "Electronics",
     "desc": "Hjj",
-    "is_sold_out": true,
+    "is_sold_out": false,
     "image": "https://raw.githubusercontent.com/nafisaaliyuhabeeb-crypto/pge-shop/main/images/1790553921629_0_file_000000003d7081f48bfcc3d7b27022c1.jpg",
     "images": [
       "https://raw.githubusercontent.com/nafisaaliyuhabeeb-crypto/pge-shop/main/images/1790553921629_0_file_000000003d7081f48bfcc3d7b27022c1.jpg",
