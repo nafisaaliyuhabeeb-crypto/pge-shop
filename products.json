@@ -1,1 +1,16 @@
-[]
+[
+  {
+    "id": 1,
+    "name": "Hhhhhh",
+    "price": 3366,
+    "discount": 35,
+    "category": "Electronics",
+    "desc": "Hjj",
+    "is_sold_out": false,
+    "image": "https://raw.githubusercontent.com/nafisaaliyuhabeeb-crypto/pge-shop/main/images/1790553921629_0_file_000000003d7081f48bfcc3d7b27022c1.jpg",
+    "images": [
+      "https://raw.githubusercontent.com/nafisaaliyuhabeeb-crypto/pge-shop/main/images/1790553921629_0_file_000000003d7081f48bfcc3d7b27022c1.jpg",
+      "https://raw.githubusercontent.com/nafisaaliyuhabeeb-crypto/pge-shop/main/images/1790553921636_1_file_00000000e69c81f48df171bd2fb6efee.jpg"
+    ]
+  }
+]
