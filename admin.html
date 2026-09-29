@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>PGE Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+--primary:#FFB800;--primary-2:#FFD644;--primary-3:#F59E0B;
+--dark:#0A0F1F;--dark-2:#131A2E;--dark-3:#1E293B;
+--text:#0F172A;--muted:#64748B;--muted-2:#94A3B8;
+--bg:#F4F6FA;--surface:#FFFFFF;--border:#E5E9F0;--border-2:#EDF1F7;
+--success:#10B981;--danger:#EF4444;--accent:#6366F1;
+--shadow-sm:0 1px 2px rgba(15,23,42,.04),0 1px 3px rgba(15,23,42,.06);
+--shadow-md:0 4px 12px rgba(15,23,42,.06),0 2px 6px rgba(15,23,42,.04);
+--shadow-lg:0 12px 32px rgba(15,23,42,.10),0 4px 12px rgba(15,23,42,.06);
+--shadow-glow:0 8px 24px rgba(255,184,0,.35);
+--r-sm:10px;--r-md:14px;--r-lg:20px;--r-xl:24px;
+--ease-spring:cubic-bezier(.34,1.56,.64,1);--ease-out:cubic-bezier(.16,1,.3,1)
+}
+html{-webkit-text-size-adjust:100%}
+body{font-family:'Plus Jakarta Sans',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:20px;line-height:1.5;font-size:14px;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font-family:inherit}
+button{border:0;cursor:pointer;background:none}
+input,select,textarea{-webkit-appearance:none;appearance:none}
+
+#authOverlay{position:fixed;inset:0;background:linear-gradient(160deg,#0A0F1F 0%,#131A2E 45%,#1E1B4B 100%);z-index:10000;display:flex;align-items:center;justify-content:center;flex-direction:column;padding:20px;overflow:hidden}
+#authOverlay::before{content:"";position:absolute;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(255,184,0,.4),transparent 70%);top:-100px;right:-100px;filter:blur(40px);pointer-events:none;z-index:0}
+#authOverlay::after{content:"";position:absolute;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(99,102,241,.35),transparent 70%);bottom:-100px;left:-100px;filter:blur(40px);pointer-events:none;z-index:0}
+.auth-card{position:relative;z-index:1;background:rgba(255,255,255,.98);backdrop-filter:blur(24px);padding:32px 24px 28px;border-radius:24px;box-shadow:0 24px 64px rgba(0,0,0,.4),0 0 0 1px rgba(255,255,255,.08);width:100%;max-width:380px;text-align:center;animation:authIn .6s var(--ease-out)}
+@keyframes authIn{from{opacity:0;transform:translateY(20px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}
+.auth-logo{width:64px;height:64px;margin:0 auto 16px;border-radius:20px;background:linear-gradient(135deg,#FFD644,#FFB800);display:flex;align-items:center;justify-content:center;color:#0A0F1F;font-size:26px;box-shadow:var(--shadow-glow);animation:logoSpin 3s ease-in-out infinite}
+@keyframes logoSpin{0%,100%{transform:rotate(-2deg) scale(1)}50%{transform:rotate(2deg) scale(1.03)}}
+.auth-card h2{font-size:19px;font-weight:800;letter-spacing:-.3px;margin-bottom:6px}
+.auth-card p{font-size:12px;color:var(--muted);margin-bottom:22px}
+.auth-field{position:relative;margin-bottom:12px;text-align:left}
+.auth-field i{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--muted-2);font-size:13px;pointer-events:none}
+.auth-field input{width:100%;padding:14px 14px 14px 40px;border:1.5px solid var(--border);border-radius:14px;font-size:13.5px;background:#F8FAFC;transition:border-color .2s,background .2s}
+.auth-field input:focus{outline:none;border-color:var(--primary);background:#fff;box-shadow:0 0 0 4px rgba(255,184,0,.15)}
+.auth-btn{width:100%;padding:14px;background:linear-gradient(135deg,#FFD644,#FFB800);color:#0A0F1F;border-radius:14px;font-weight:800;font-size:14px;transition:transform .15s var(--ease-spring);box-shadow:var(--shadow-glow);margin-top:6px;display:flex;align-items:center;justify-content:center;gap:8px}
+.auth-btn:active{transform:scale(.97)}
+.auth-error{background:rgba(239,68,68,.1);color:var(--danger);font-size:12px;padding:10px;border-radius:10px;margin-top:12px;font-weight:600;display:none;text-align:center}
+.auth-error.show{display:block}
+
+.admin-header{position:sticky;top:0;z-index:100;background:rgba(10,15,31,.85);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,.06);padding:14px 16px}
+.admin-header-inner{max-width:960px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.admin-title{display:flex;align-items:center;gap:10px;color:#fff}
+.admin-title-icon{width:38px;height:38px;background:linear-gradient(135deg,#FFD644,#FFB800);border-radius:12px;display:flex;align-items:center;justify-content:center;color:#0A0F1F;font-size:16px;box-shadow:0 6px 16px rgba(255,184,0,.4)}
+.admin-title h1{font-size:15px;font-weight:800;line-height:1.2}
+.admin-title span{font-size:10px;color:rgba(255,255,255,.5);display:block;margin-top:2px}
+.admin-tools{display:flex;gap:6px;flex-wrap:wrap}
+.tool-btn{padding:8px 12px;border-radius:10px;background:rgba(255,255,255,.08);color:#fff;font-weight:600;font-size:11px;display:flex;align-items:center;gap:6px;border:1px solid rgba(255,255,255,.08);transition:background .15s}
+.tool-btn:active{transform:scale(.96);background:rgba(255,255,255,.15)}
+.tool-btn i{color:var(--primary-2);font-size:12px}
+
+main{max-width:960px;margin:0 auto;padding:20px 16px 40px}
+.section{background:var(--surface);border-radius:var(--r-xl);padding:20px;margin-bottom:16px;box-shadow:var(--shadow-md);border:1px solid var(--border-2);animation:fadeUp .4s var(--ease-out) backwards}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.section-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px}
+.section-head h2{font-size:15px;font-weight:800;display:flex;align-items:center;gap:8px}
+.section-head h2 i{width:28px;height:28px;border-radius:9px;background:linear-gradient(135deg,#FFF7E6,#FFEFC2);color:var(--primary-3);display:flex;align-items:center;justify-content:center;font-size:12px}
+.count-pill{background:#EEF2F7;color:var(--muted);font-size:10.5px;font-weight:700;padding:3px 10px;border-radius:20px}
+
+.btn{padding:10px 16px;border-radius:12px;font-weight:700;font-size:12.5px;display:inline-flex;align-items:center;gap:7px;transition:transform .15s var(--ease-spring);cursor:pointer}
+.btn:active{transform:scale(.95)}
+.btn-primary{background:linear-gradient(135deg,#FFD644,#FFB800);color:#0A0F1F;box-shadow:0 6px 16px rgba(255,184,0,.35)}
+.btn-success{background:linear-gradient(135deg,#34D399,#10B981);color:#fff;box-shadow:0 6px 16px rgba(16,185,129,.3)}
+.btn-danger{background:rgba(239,68,68,.1);color:var(--danger)}
+.btn-icon{width:36px;height:36px;padding:0;justify-content:center;border-radius:11px;background:#F1F5F9;color:var(--muted)}
+.btn-icon.danger{background:rgba(239,68,68,.08);color:var(--danger)}
+
+.item-list{display:flex;flex-direction:column;gap:10px}
+.item-row{display:flex;align-items:center;gap:12px;padding:12px;border-radius:16px;background:#FAFBFD;border:1.5px solid var(--border-2);transition:box-shadow .2s,transform .2s;touch-action:pan-y;position:relative;user-select:none}
+.item-row:hover{border-color:var(--border);box-shadow:var(--shadow-sm)}
+.item-row.dragging{box-shadow:var(--shadow-lg);border-color:var(--primary);background:#fff;z-index:100}
+.drag-handle{width:36px;height:44px;display:flex;align-items:center;justify-content:center;cursor:grab;border-radius:10px;color:var(--muted-2);font-size:14px;touch-action:none;flex-shrink:0}
+.drag-handle:active{cursor:grabbing;background:#E5E9F0}
+.position-num{position:absolute;top:6px;right:6px;min-width:22px;height:22px;padding:0 6px;border-radius:11px;background:linear-gradient(135deg,#FFD644,#FFB800);color:#0A0F1F;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(255,184,0,.4)}
+.item-thumb{width:56px;height:56px;border-radius:12px;object-fit:cover;background:#EEF2F7;flex-shrink:0}
+.item-info{flex:1;min-width:0}
+.item-title{font-size:13px;font-weight:700;color:var(--dark);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:3px}
+.item-sub{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:4px}
+.item-meta{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.chip{font-size:9.5px;font-weight:700;padding:2px 8px;border-radius:8px;background:#EEF2F7;color:var(--muted)}
+.chip.gold{background:linear-gradient(135deg,#FFF7E6,#FFEFC2);color:var(--primary-3)}
+.chip.success{background:rgba(16,185,129,.12);color:var(--success)}
+.chip.danger{background:rgba(239,68,68,.1);color:var(--danger)}
+.item-actions{display:flex;gap:6px;flex-shrink:0}
+
+.empty{padding:32px 16px;text-align:center;color:var(--muted);background:#FAFBFD;border-radius:16px;border:1.5px dashed var(--border)}
+.empty i{font-size:34px;color:#CBD5E1;margin-bottom:8px;display:block}
+
+.modal{position:fixed;inset:0;background:rgba(10,15,31,.55);backdrop-filter:blur(6px);z-index:1000;display:none;align-items:flex-end;justify-content:center}
+@media(min-width:640px){.modal{align-items:center;padding:20px}}
+.modal.show{display:flex;animation:fadeIn .25s}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.modal-card{background:#fff;width:100%;max-width:540px;max-height:92vh;overflow-y:auto;padding:22px 20px 26px;border-radius:24px 24px 0 0;position:relative;animation:slideUpSheet .4s var(--ease-out);-webkit-overflow-scrolling:touch}
+@media(min-width:640px){.modal-card{border-radius:24px;animation:modalIn .35s var(--ease-spring)}}
+@keyframes slideUpSheet{from{transform:translateY(100%)}to{transform:translateY(0)}}
+@keyframes modalIn{from{transform:scale(.94);opacity:0}to{transform:scale(1);opacity:1}}
+.modal-grabber{width:40px;height:4px;background:#E5E9F0;border-radius:2px;margin:0 auto 14px}
+@media(min-width:640px){.modal-grabber{display:none}}
+.modal-card h3{font-size:17px;font-weight:800;margin-bottom:16px}
+.modal-close{position:absolute;top:14px;right:14px;width:34px;height:34px;border-radius:50%;background:#F1F5F9;color:var(--muted);display:flex;align-items:center;justify-content:center;font-size:14px;z-index:10}
+
+.form-group{margin-bottom:14px}
+.form-group label{display:block;font-size:11.5px;font-weight:700;color:var(--muted);margin-bottom:6px;text-transform:uppercase}
+.form-group input,.form-group select,.form-group textarea{width:100%;padding:12px 14px;border:1.5px solid var(--border);border-radius:12px;font-size:13.5px;background:#FAFBFD;color:var(--text);transition:border-color .2s}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:var(--primary);background:#fff;box-shadow:0 0 0 4px rgba(255,184,0,.13)}
+.form-group textarea{resize:vertical;min-height:70px;font-family:inherit}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:480px){.form-row{grid-template-columns:1fr}}
+.file-input-wrap{position:relative}
+.file-input-wrap input[type="file"]{position:absolute;inset:0;opacity:0;cursor:pointer;z-index:2}
+.file-input-btn{display:flex;align-items:center;gap:10px;padding:14px;border:1.5px dashed var(--border);border-radius:12px;background:#FAFBFD;color:var(--muted);font-size:12.5px;font-weight:600}
+.file-input-btn i{color:var(--primary-3);font-size:15px}
+.checkbox-group{display:flex;align-items:center;gap:12px;padding:12px 14px;background:#FAFBFD;border:1.5px solid var(--border);border-radius:12px;cursor:pointer}
+.checkbox-group input{width:20px;height:20px;accent-color:var(--danger);cursor:pointer}
+.checkbox-group label{margin:0;text-transform:none;font-size:13px;font-weight:600;cursor:pointer}
+.submit-btn{width:100%;padding:14px;justify-content:center;margin-top:6px;font-size:14px}
+
+/* Product image drag grid */
+.img-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:10px;margin-top:10px;touch-action:pan-y}
+.img-cell{position:relative;aspect-ratio:1/1;border-radius:14px;overflow:hidden;background:#EEF2F7;border:2px solid var(--border-2);box-shadow:var(--shadow-sm);cursor:grab;touch-action:none;user-select:none;transition:transform .2s,box-shadow .2s,border-color .2s}
+.img-cell:active{cursor:grabbing}
+.img-cell.cover{border-color:var(--primary);box-shadow:0 0 0 4px rgba(255,184,0,.18),var(--shadow-md)}
+.img-cell.dragging-img{opacity:.9;transform:scale(1.08);z-index:50;box-shadow:var(--shadow-lg)}
+.img-cell img{width:100%;height:100%;object-fit:cover;pointer-events:none}
+.img-cell .rm{position:absolute;top:5px;right:5px;width:24px;height:24px;border-radius:50%;background:rgba(239,68,68,.95);color:#fff;font-size:11px;display:flex;align-items:center;justify-content:center;z-index:3;box-shadow:0 2px 6px rgba(0,0,0,.25)}
+.img-cell .badge{position:absolute;bottom:5px;left:5px;background:linear-gradient(135deg,#FFD644,#FFB800);color:#0A0F1F;font-size:8px;font-weight:800;padding:2px 7px;border-radius:6px;z-index:3}
+.img-cell .num{position:absolute;top:5px;left:5px;width:20px;height:20px;background:rgba(10,15,31,.75);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;z-index:3}
+
+/* Notification composer */
+.notif-preview{background:#FFFBF0;border:1.5px solid #FDE68A;border-radius:14px;padding:14px;margin-bottom:12px;display:flex;gap:11px;align-items:flex-start}
+.notif-preview i{color:var(--primary-3);font-size:16px;margin-top:2px}
+.notif-preview .txt{flex:1;font-size:12.5px;color:#78350F;line-height:1.5;font-weight:500}
+.notif-empty{background:#FAFBFD;border:1.5px dashed var(--border);border-radius:14px;padding:20px;text-align:center;color:var(--muted);font-size:12px}
+
+.progress-overlay{position:fixed;inset:0;background:rgba(10,15,31,.75);backdrop-filter:blur(8px);z-index:3000;display:none;align-items:center;justify-content:center;padding:20px}
+.progress-overlay.show{display:flex}
+.progress-card{background:#fff;padding:28px 22px;border-radius:22px;max-width:340px;width:100%;text-align:center;box-shadow:0 24px 60px rgba(0,0,0,.35)}
+.progress-card .icon{width:56px;height:56px;margin:0 auto 14px;border-radius:18px;background:linear-gradient(135deg,#FFF7E6,#FFEFC2);color:var(--primary-3);display:flex;align-items:center;justify-content:center;font-size:22px}
+.progress-card h4{font-size:15px;font-weight:800;margin-bottom:6px}
+.progress-card p{font-size:12px;color:var(--muted);margin-bottom:16px}
+.progress-bar{height:6px;background:#EEF2F7;border-radius:3px;overflow:hidden;margin-bottom:10px}
+.progress-bar>div{height:100%;background:linear-gradient(90deg,#FFD644,#FFB800);width:0%;transition:width .3s;border-radius:3px}
+.progress-status{font-size:11px;color:var(--muted);font-weight:600}
+
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:rgba(10,15,31,.96);backdrop-filter:blur(16px);color:#fff;padding:12px 20px;border-radius:14px;font-weight:600;font-size:12.5px;z-index:9999;opacity:0;pointer-events:none;box-shadow:0 12px 32px rgba(0,0,0,.35);transition:all .35s var(--ease-out);max-width:90%;text-align:center;border:1px solid rgba(255,255,255,.08)}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);pointer-events:auto}
+
+.skel{background:linear-gradient(90deg,#EEF2F7 0%,#F8FAFC 50%,#EEF2F7 100%);background-size:200% 100%;animation:sk 1.4s infinite;border-radius:10px}
+@keyframes sk{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.skel-row{display:flex;align-items:center;gap:12px;padding:12px;border-radius:16px;background:#FAFBFD;border:1.5px solid var(--border-2)}
+.skel-thumb{width:56px;height:56px;border-radius:12px;flex-shrink:0}
+.skel-lines{flex:1;display:flex;flex-direction:column;gap:8px}
+.skel-line{height:12px}
+.skel-line.w70{width:70%}
+.skel-line.w40{width:40%}
+</style>
+</head>
+<body>
+
+<div id="authOverlay">
+<div class="auth-card">
+<div class="auth-logo"><i class="fa-solid fa-crown"></i></div>
+<h2>PGE Admin</h2>
+<p>Sign in to manage your store</p>
+<div class="auth-field"><i class="fa-solid fa-lock"></i><input type="password" id="adminPasswordInput" placeholder="Password" autocomplete="current-password"></div>
+<div class="auth-field"><i class="fa-solid fa-key"></i><input type="password" id="tokenInput" placeholder="GitHub token" autocomplete="off"></div>
+<button class="auth-btn" onclick="verifyAdmin()"><i class="fa-solid fa-unlock"></i> Unlock Dashboard</button>
+<div id="authErrorMsg" class="auth-error"></div>
+</div>
+</div>
+
+<header class="admin-header">
+<div class="admin-header-inner">
+<div class="admin-title">
+<div class="admin-title-icon"><i class="fa-solid fa-crown"></i></div>
+<div><h1>PGE Admin</h1><span>Content Manager</span></div>
+</div>
+<div class="admin-tools">
+<button class="tool-btn" onclick="exportData()"><i class="fa-solid fa-download"></i> Export</button>
+<button class="tool-btn" onclick="importData()"><i class="fa-solid fa-upload"></i> Import</button>
+<button class="tool-btn" onclick="changeToken()"><i class="fa-solid fa-key"></i> Token</button>
+<a class="tool-btn" href="index.html" target="_blank"><i class="fa-solid fa-eye"></i> View</a>
+</div>
+</div>
+</header>
+
+<main>
+
+<section class="section">
+<div class="section-head">
+<h2><i class="fa-solid fa-bullhorn"></i> Push Notification <span class="count-pill" id="notifStatus">No active</span></h2>
+</div>
+<div id="notifCurrent"></div>
+<div class="form-group">
+<label>Message to customers</label>
+<textarea id="notifMessage" placeholder="e.g. 🎉 Flash sale! 20% off all phones today only!" style="min-height:80px"></textarea>
+</div>
+<div class="form-row">
+<button class="btn btn-success" onclick="saveNotification()"><i class="fa-solid fa-paper-plane"></i> Send Notification</button>
+<button class="btn btn-danger" onclick="clearNotification()"><i class="fa-solid fa-xmark"></i> Clear</button>
+</div>
+<p style="font-size:11px;color:var(--muted);margin-top:10px;line-height:1.5;">
+<i class="fa-solid fa-circle-info" style="color:var(--primary-3)"></i>
+Customers see this as a toast when they open the app. Each message shows once per customer.
+</p>
+</section>
+
+<section class="section">
+<div class="section-head">
+<h2><i class="fa-solid fa-image"></i> Banners <span class="count-pill" id="bannerCount">0</span></h2>
+<button class="btn btn-primary" onclick="openBannerModal()"><i class="fa-solid fa-plus"></i> Add Banner</button>
+</div>
+<p style="font-size:11px;color:var(--muted);margin-bottom:12px;display:flex;align-items:center;gap:6px;">
+<i class="fa-solid fa-hand-pointer" style="color:var(--primary-3)"></i> Press and hold <i class="fa-solid fa-grip-vertical"></i> to reorder — #1 plays first
+</p>
+<div id="bannerList" class="item-list">
+<div class="skel-row"><div class="skel skel-thumb"></div><div class="skel-lines"><div class="skel skel-line w70"></div><div class="skel skel-line w40"></div></div></div>
+</div>
+</section>
+
+<section class="section">
+<div class="section-head">
+<h2><i class="fa-solid fa-box"></i> Products <span class="count-pill" id="productCount">0</span></h2>
+<button class="btn btn-primary" onclick="openProductModal()"><i class="fa-solid fa-plus"></i> Add Product</button>
+</div>
+<div id="productList" class="item-list">
+<div class="skel-row"><div class="skel skel-thumb"></div><div class="skel-lines"><div class="skel skel-line w70"></div><div class="skel skel-line w40"></div></div></div>
+</div>
+</section>
+
+</main>
+
+<div id="bannerModal" class="modal">
+<div class="modal-card">
+<div class="modal-grabber"></div>
+<button class="modal-close" onclick="closeModal('bannerModal')"><i class="fa-solid fa-xmark"></i></button>
+<h3 id="bannerModalTitle">Add Banner</h3>
+<form id="bannerForm" onsubmit="saveBanner(event)">
+<input type="hidden" id="bannerEditId">
+<input type="hidden" id="bannerImageUrl">
+<div class="form-group">
+<label>Banner Image</label>
+<div class="file-input-wrap">
+<input type="file" id="bannerFile" accept="image/*" onchange="previewImage(this,'bannerPreview','bannerImageUrl')">
+<div class="file-input-btn"><i class="fa-solid fa-cloud-arrow-up"></i> <span id="bannerFileLabel">Tap to choose image</span></div>
+</div>
+<img id="bannerPreview" style="max-width:100%;max-height:120px;object-fit:cover;border-radius:12px;margin-top:10px;display:none" alt="">
+</div>
+<div class="form-group"><label>Or image URL</label><input type="url" id="bannerImageAlt" placeholder="https://..." oninput="document.getElementById('bannerImageUrl').value=this.value;var p=document.getElementById('bannerPreview');p.src=this.value;p.style.display=this.value?'block':'none'"></div>
+<div class="form-group"><label>Label</label><input type="text" id="bannerLabel" placeholder="e.g. Flash Sale"></div>
+<div class="form-group"><label>Title</label><input type="text" id="bannerTitle" placeholder="e.g. Upgrade Your Lifestyle"></div>
+<div class="form-group"><label>Description</label><input type="text" id="bannerDesc" placeholder="Short subtitle"></div>
+<div class="form-row">
+<div class="form-group"><label>Button Text</label><input type="text" id="bannerBtnText" placeholder="Shop Now"></div>
+<div class="form-group"><label>Button Category</label><input type="text" id="bannerBtnCategory" placeholder="Electronics"></div>
+</div>
+<button type="submit" class="btn btn-success submit-btn"><i class="fa-solid fa-check"></i> Save Banner</button>
+</form>
+</div>
+</div>
+
+<div id="productModal" class="modal">
+<div class="modal-card">
+<div class="modal-grabber"></div>
+<button class="modal-close" onclick="closeModal('productModal')"><i class="fa-solid fa-xmark"></i></button>
+<h3 id="productModalTitle">Add Product</h3>
+<form id="productForm" onsubmit="saveProduct(event)">
+<input type="hidden" id="productEditId">
+<div class="form-group"><label>Product Name</label><input type="text" id="productName" required placeholder="Product name"></div>
+<div class="form-row">
+<div class="form-group"><label>Price (₦)</label><input type="number" id="productPrice" required placeholder="0"></div>
+<div class="form-group"><label>Discount %</label><input type="number" id="productDiscount" placeholder="0" min="0" max="100"></div>
+</div>
+<div class="form-group"><label>Category</label>
+<select id="productCategory" required>
+<option value="Electronics">Electronics</option>
+<option value="Phones">Phones</option>
+<option value="Laptop">Laptop</option>
+<option value="Fashion">Fashion</option>
+</select>
+</div>
+<div class="form-group"><label>Description</label><textarea id="productDesc" required placeholder="Product details..."></textarea></div>
+<div class="form-group">
+<div class="checkbox-group">
+<input type="checkbox" id="productSoldOut">
+<label for="productSoldOut">Mark as Sold Out</label>
+</div>
+</div>
+<div class="form-group">
+<label>Product Images — drag to reorder, #1 is the Cover</label>
+<div class="file-input-wrap">
+<input type="file" id="productFiles" accept="image/*" multiple onchange="handleProductFiles(this)">
+<div class="file-input-btn"><i class="fa-solid fa-images"></i> <span id="productFileLabel">Tap to add more images</span></div>
+</div>
+<div id="productThumbs" class="img-grid"></div>
+</div>
+<button type="submit" class="btn btn-success submit-btn"><i class="fa-solid fa-check"></i> Save Product</button>
+</form>
+</div>
+</div>
+
+<div id="progressOverlay" class="progress-overlay">
+<div class="progress-card">
+<div class="icon"><i class="fa-solid fa-cloud-arrow-up"></i></div>
+<h4 id="progressTitle">Saving...</h4>
+<p id="progressSub">Please wait, do not close</p>
+<div class="progress-bar"><div id="progressFill"></div></div>
+<div class="progress-status" id="progressStatus">Starting...</div>
+</div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+/* ============ CONFIG ============ */
+const GH_USER='nafisaaliyuhabeeb-crypto';
+const GH_REPO='pge-shop';
+const GH_BRANCH='main';
+const API_BASE='https://api.github.com/repos/'+GH_USER+'/'+GH_REPO+'/contents';
+const RAW_BASE='https://raw.githubusercontent.com/'+GH_USER+'/'+GH_REPO+'/'+GH_BRANCH;
+
+function getToken(){return localStorage.getItem('pge_github_token')||''}
+function setToken(t){localStorage.setItem('pge_github_token',t)}
+function changeToken(){
+  const cur=getToken()?'(saved)':'(none)';
+  const t=prompt('Current token '+cur+'. Paste a new one (or Cancel):','');
+  if(t===null)return;
+  if(t.trim()){setToken(t.trim());toast('Token updated!')}
+}
+
+/* ============ AUTH ============ */
+const PASS='admin5677*#*#@';
+const LOCK_MS=180000;
+let unlocked=false,lockT;
+
+function verifyAdmin(){
+  const p=document.getElementById('adminPasswordInput').value;
+  const t=document.getElementById('tokenInput').value.trim();
+  const err=document.getElementById('authErrorMsg');
+  if(p!==PASS){err.textContent='Incorrect password';err.classList.add('show');return}
+  if(t)setToken(t);
+  if(!getToken()){err.textContent='Please paste your GitHub token';err.classList.add('show');return}
+  document.getElementById('authOverlay').style.display='none';
+  document.getElementById('adminPasswordInput').value='';
+  document.getElementById('tokenInput').value='';
+  unlocked=true;resetTimer();loadData();loadNotification();
+}
+function lockApp(){
+  document.getElementById('authOverlay').style.display='flex';
+  unlocked=false;clearTimeout(lockT);
+  setTimeout(()=>{const ti=document.getElementById('tokenInput');if(ti){const s=getToken();if(s){ti.value=s;ti.placeholder='(saved)'}}},60);
+}
+function resetTimer(){if(!unlocked)return;clearTimeout(lockT);lockT=setTimeout(lockApp,LOCK_MS)}
+['mousemove','keydown','click','scroll','touchstart'].forEach(e=>document.addEventListener(e,resetTimer,{passive:true}));
+document.addEventListener('visibilitychange',()=>{if(document.hidden)lockApp()});
+lockApp();
+
+/* ============ STATE ============ */
+let banners=[],products=[];
+
+/* ============ HELPERS ============ */
+function toB64(s){return btoa(unescape(encodeURIComponent(s)))}
+function fromB64(s){const b=atob(s.replace(/\n/g,''));try{return decodeURIComponent(escape(b))}catch(e){return b}}
+function fileToB64(f){return new Promise((res,rej)=>{const r=new FileReader();r.readAsDataURL(f);r.onload=()=>res(r.result.split(',')[1]);r.onerror=rej})}
+function compressImage(file,maxDim,quality){
+  maxDim=maxDim||1200;quality=quality||0.75;
+  return new Promise((res,rej)=>{
+    const reader=new FileReader();
+    reader.onload=function(e){
+      const img=new Image();
+      img.onload=function(){
+        let w=img.width,h=img.height;
+        if(w>maxDim||h>maxDim){if(w>h){h=Math.round(h*maxDim/w);w=maxDim}else{w=Math.round(w*maxDim/h);h=maxDim}}
+        const c=document.createElement('canvas');c.width=w;c.height=h;
+        const ctx=c.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,w,h);ctx.drawImage(img,0,0,w,h);
+        c.toBlob(b=>{if(!b)return rej(new Error('Compression failed'));
+          const r2=new FileReader();r2.onload=function(){res(r2.result.split(',')[1])};r2.onerror=rej;r2.readAsDataURL(b);
+        },'image/jpeg',quality);
+      };
+      img.onerror=()=>rej(new Error('Image load failed'));
+      img.src=e.target.result;
+    };
+    reader.onerror=rej;reader.readAsDataURL(file);
+  });
+}
+
+/* ============ FETCH ============ */
+async function fetchRetry(url,opt,tries){
+  tries=tries||3;let lastErr;
+  for(let i=0;i<tries;i++){
+    try{const r=await fetch(url,opt);if(r.ok||r.status===404||r.status===403||r.status===409)return r;lastErr=new Error('HTTP '+r.status)}catch(e){lastErr=e}
+    if(i<tries-1)await new Promise(r=>setTimeout(r,700*(i+1)));
+  }
+  throw lastErr||new Error('Network error');
+}
+
+async function getSha(path){
+  const t=getToken();if(!t)return null;
+  try{
+    const r=await fetchRetry(API_BASE+'/'+path+'?ref='+GH_BRANCH+'&t='+Date.now(),{headers:{'Authorization':'Bearer '+t,'Accept':'application/vnd.github+json'},cache:'no-store'});
+    if(r.status===404)return null;if(!r.ok)return null;return (await r.json()).sha;
+  }catch(e){return null}
+}
+async function getJSON(path){
+  const t=getToken();const h={'Accept':'application/vnd.github+json'};if(t)h['Authorization']='Bearer '+t;
+  const r=await fetchRetry(API_BASE+'/'+path+'?ref='+GH_BRANCH+'&t='+Date.now(),{headers:h,cache:'no-store'});
+  if(r.status===404)return[];
+  if(!r.ok)return null;
+  const d=await r.json();
+  try{return JSON.parse(fromB64(d.content))}catch(e){return[]}
+}
+async function pushFile(path,b64,msg){
+  const t=getToken();if(!t)throw new Error('No GitHub token');
+  let sha=await getSha(path);
+  const body={message:msg,content:b64,branch:GH_BRANCH};if(sha)body.sha=sha;
+  let r=await fetchRetry(API_BASE+'/'+path,{method:'PUT',headers:{'Authorization':'Bearer '+t,'Accept':'application/vnd.github+json','Content-Type':'application/json'},body:JSON.stringify(body)});
+  if(r.status===409){
+    await new Promise(res=>setTimeout(res,600));
+    sha=await getSha(path);
+    const body2={message:msg,content:b64,branch:GH_BRANCH};if(sha)body2.sha=sha;
+    r=await fetchRetry(API_BASE+'/'+path,{method:'PUT',headers:{'Authorization':'Bearer '+t,'Accept':'application/vnd.github+json','Content-Type':'application/json'},body:JSON.stringify(body2)});
+  }
+  if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e.message||('Error '+r.status))}
+  return r.json();
+}
+async function uploadImage(file,idx){
+  let b64;try{b64=await compressImage(file,1200,0.75)}catch(e){b64=await fileToB64(file)}
+  const safe=(file.name||'img').replace(/[^a-zA-Z0-9._-]/g,'_').replace(/\.[^.]+$/,'')+'.jpg';
+  const rand=Math.random().toString(36).substring(2,9);
+  const name=Date.now()+'_'+(idx||0)+'_'+rand+'_'+safe;
+  const path='images/'+name;
+  await pushFile(path,b64,'Upload '+name);
+  return RAW_BASE+'/'+path;
+}
+
+/* ============ LOAD ============ */
+async function loadData(){
+  try{
+    const[b,p]=await Promise.all([getJSON('banners.json'),getJSON('products.json')]);
+    banners=Array.isArray(b)?b:[];products=Array.isArray(p)?p:[];
+    renderBanners();renderProducts();
+  }catch(e){toast('Load error: '+e.message)}
+}
+
+/* ============ NOTIFICATIONS ============ */
+let currentNotification=null;
+async function loadNotification(){
+  try{
+    const n=await getJSON('notification.json');
+    if(n && n.message && n.message.trim()){
+      currentNotification=n;
+      document.getElementById('notifMessage').value=n.message;
+      document.getElementById('notifStatus').textContent='Active';
+      document.getElementById('notifStatus').style.background='rgba(16,185,129,.15)';
+      document.getElementById('notifStatus').style.color='#10B981';
+      document.getElementById('notifCurrent').innerHTML=
+        '<div class="notif-preview"><i class="fa-solid fa-bullhorn"></i><div class="txt">'+escapeHtml(n.message)+'<div style="font-size:10px;color:#92400E;margin-top:4px;font-weight:600;">Posted '+timeAgo(n.postedAt)+'</div></div></div>';
+    }else{
+      currentNotification=null;
+      document.getElementById('notifStatus').textContent='No active';
+      document.getElementById('notifStatus').style.background='';
+      document.getElementById('notifStatus').style.color='';
+      document.getElementById('notifCurrent').innerHTML='<div class="notif-empty"><i class="fa-solid fa-bell-slash" style="font-size:20px;display:block;margin-bottom:6px;color:#CBD5E1;"></i>No active notification</div>';
+    }
+  }catch(e){console.error(e)}
+}
+
+async function saveNotification(){
+  const msg=document.getElementById('notifMessage').value.trim();
+  if(!msg){toast('Write a message first');return}
+  showProgress('Sending notification','Updating GitHub');
+  updateProgress(30,'Saving...');
+  try{
+    const data={message:msg,postedAt:Date.now(),id:'notif_'+Date.now()};
+    await pushFile('notification.json',toB64(JSON.stringify(data,null,2)),'Update notification');
+    updateProgress(100,'Done!');
+    currentNotification=data;
+    await loadNotification();
+    toast('Notification sent!');
+  }catch(e){toast('Error: '+e.message)}
+  finally{setTimeout(hideProgress,400)}
+}
+
+async function clearNotification(){
+  if(!confirm('Remove the current notification?'))return;
+  showProgress('Clearing...','Updating GitHub');
+  updateProgress(30,'Saving...');
+  try{
+    await pushFile('notification.json',toB64(JSON.stringify({message:'',postedAt:0,id:'cleared_'+Date.now()},null,2)),'Clear notification');
+    updateProgress(100,'Done!');
+    document.getElementById('notifMessage').value='';
+    currentNotification=null;
+    await loadNotification();
+    toast('Notification cleared');
+  }catch(e){toast('Error: '+e.message)}
+  finally{setTimeout(hideProgress,400)}
+}
+
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function timeAgo(ts){
+  if(!ts)return'';
+  const d=Date.now()-ts;
+  if(d<60000)return'just now';
+  if(d<3600000)return Math.floor(d/60000)+'m ago';
+  if(d<86400000)return Math.floor(d/3600000)+'h ago';
+  return Math.floor(d/86400000)+'d ago';
+}
+
+/* ============ RENDER ============ */
+function getImgs(p){if(Array.isArray(p.images)&&p.images.length)return p.images;if(p.image)return[p.image];return[]}
+
+function renderBanners(){
+  document.getElementById('bannerCount').textContent=banners.length;
+  const el=document.getElementById('bannerList');
+  if(!banners.length){el.innerHTML='<div class="empty"><i class="fa-solid fa-image"></i><p>No banners yet</p></div>';return}
+  el.innerHTML=banners.map((b,i)=>
+    '<div class="item-row" data-index="'+i+'">'+
+    '<div class="position-num">'+(i+1)+'</div>'+
+    '<div class="drag-handle" data-handle="'+i+'"><i class="fa-solid fa-grip-vertical"></i></div>'+
+    '<img class="item-thumb" src="'+(b.image||'')+'" onerror="this.src=\'https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=200&q=60\'">'+
+    '<div class="item-info">'+
+    '<div class="item-title">'+(b.label||b.title||'Banner #'+(i+1))+'</div>'+
+    '<div class="item-sub">'+(b.desc||'No description')+'</div>'+
+    '</div>'+
+    '<div class="item-actions">'+
+    '<button class="btn btn-icon" onclick="editBanner('+b.id+')"><i class="fa-solid fa-pen"></i></button>'+
+    '<button class="btn btn-icon danger" onclick="deleteBanner('+b.id+')"><i class="fa-solid fa-trash"></i></button>'+
+    '</div></div>'
+  ).join('');
+  attachListDrag('bannerList',banners,'banners.json',renderBanners);
+}
+
+function renderProducts(){
+  document.getElementById('productCount').textContent=products.length;
+  const el=document.getElementById('productList');
+  if(!products.length){el.innerHTML='<div class="empty"><i class="fa-solid fa-box-open"></i><p>No products yet</p></div>';return}
+  el.innerHTML=products.map((p,i)=>{
+    const imgs=getImgs(p);
+    return '<div class="item-row">'+
+    '<img class="item-thumb" src="'+(imgs[0]||'')+'" onerror="this.src=\'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=200&q=60\'">'+
+    '<div class="item-info">'+
+    '<div class="item-title">'+escapeHtml(p.name)+'</div>'+
+    '<div class="item-sub">₦'+Number(p.price||0).toLocaleString()+'</div>'+
+    '<div class="item-meta">'+
+    '<span class="chip">'+escapeHtml(p.category)+'</span>'+
+    (p.is_sold_out?'<span class="chip danger">Sold Out</span>':'<span class="chip success">Available</span>')+
+    (imgs.length>1?'<span class="chip gold"><i class="fa-solid fa-images"></i> '+imgs.length+'</span>':'')+
+    '</div></div>'+
+    '<div class="item-actions">'+
+    '<button class="btn btn-icon" onclick="editProduct('+p.id+')"><i class="fa-solid fa-pen"></i></button>'+
+    '<button class="btn btn-icon danger" onclick="deleteProduct('+p.id+')"><i class="fa-solid fa-trash"></i></button>'+
+    '</div></div>';
+  }).join('');
+}
+
+/* ============ DRAG: LIST (banners) ============ */
+function attachListDrag(listId,arr,savePath,reRender){
+  const list=document.getElementById(listId);
+  list.querySelectorAll('.drag-handle').forEach(h=>h.addEventListener('pointerdown',startDrag));
+  function startDrag(e){
+    e.preventDefault();
+    const idx=parseInt(e.currentTarget.dataset.handle,10);
+    const rows=Array.from(list.querySelectorAll('.item-row'));
+    const moved=rows[idx];if(!moved)return;
+    const startY=e.clientY,rowH=rows[0].getBoundingClientRect().height+10;
+    let newIdx=idx;
+    moved.classList.add('dragging');
+    const onMove=ev=>{
+      const dy=ev.clientY-startY;
+      moved.style.transform='translateY('+dy+'px)';
+      newIdx=Math.max(0,Math.min(rows.length-1,idx+Math.round(dy/rowH)));
+      rows.forEach((r,i)=>{if(r===moved){r.style.transform='';return}
+        let off=0;
+        if(idx<newIdx&&i>idx&&i<=newIdx)off=-rowH;
+        else if(idx>newIdx&&i<idx&&i>=newIdx)off=rowH;
+        r.style.transform=off?'translateY('+off+'px)':'';});
+    };
+    const onUp=async()=>{
+      document.removeEventListener('pointermove',onMove);
+      document.removeEventListener('pointerup',onUp);
+      document.removeEventListener('pointercancel',onUp);
+      rows.forEach(r=>{r.style.transform='';r.classList.remove('dragging')});
+      if(newIdx===idx)return;
+      const[item]=arr.splice(idx,1);arr.splice(newIdx,0,item);reRender();
+      try{await pushFile(savePath,toB64(JSON.stringify(arr,null,2)),'Reorder '+savePath);toast('Order saved!')}
+      catch(err){toast('Save failed: '+err.message)}
+    };
+    document.addEventListener('pointermove',onMove,{passive:false});
+    document.addEventListener('pointerup',onUp);
+    document.addEventListener('pointercancel',onUp);
+  }
+}
+
+/* ============ DRAG: IMAGE GRID (product images) ============ */
+let productImages=[];
+function attachImgDrag(){
+  const grid=document.getElementById('productThumbs');
+  grid.querySelectorAll('.img-cell').forEach(cell=>{
+    cell.addEventListener('pointerdown',startImgDrag);
+  });
+  function startImgDrag(e){
+    if(e.target.classList.contains('rm'))return;
+    e.preventDefault();
+    const idx=parseInt(e.currentTarget.dataset.idx,10);
+    const cells=Array.from(grid.querySelectorAll('.img-cell'));
+    const moved=cells[idx];if(!moved)return;
+    const startX=e.clientX,startY=e.clientY;
+    const rect=moved.getBoundingClientRect();
+    const cellW=rect.width+10,cellH=rect.height+10;
+    const perRow=Math.max(1,Math.floor(grid.getBoundingClientRect().width/cellW));
+    let newIdx=idx;
+    moved.classList.add('dragging-img');
+    const onMove=ev=>{
+      const dx=ev.clientX-startX,dy=ev.clientY-startY;
+      moved.style.transform='translate('+dx+'px,'+dy+'px) scale(1.08)';
+      const colShift=Math.round(dx/cellW);
+      const rowShift=Math.round(dy/cellH);
+      newIdx=Math.max(0,Math.min(cells.length-1,idx+rowShift*perRow+colShift));
+      cells.forEach((c,i)=>{
+        if(c===moved)return;
+        let off=0;
+        if(idx<newIdx&&i>idx&&i<=newIdx)off=-1;
+        else if(idx>newIdx&&i<idx&&i>=newIdx)off=1;
+        if(off){
+          const r=Math.floor(i/perRow),cl=i%perRow;
+          c.style.transform='translate('+(off*0)+'px,'+(off*cellH)+'px)';
+        }else c.style.transform='';
+      });
+    };
+    const onUp=()=>{
+      document.removeEventListener('pointermove',onMove);
+      document.removeEventListener('pointerup',onUp);
+      document.removeEventListener('pointercancel',onUp);
+      cells.forEach(c=>{c.style.transform='';c.classList.remove('dragging-img')});
+      if(newIdx===idx)return;
+      const[item]=productImages.splice(idx,1);productImages.splice(newIdx,0,item);
+      renderProductThumbs();
+    };
+    document.addEventListener('pointermove',onMove,{passive:false});
+    document.addEventListener('pointerup',onUp);
+    document.addEventListener('pointercancel',onUp);
+  }
+}
+
+/* ============ IMAGE PREVIEW ============ */
+function previewImage(input,pid,urlId){
+  const lbl=input.id==='bannerFile'?'bannerFileLabel':'productFileLabel';
+  if(input.files&&input.files[0]){
+    const f=input.files[0];
+    document.getElementById(lbl).textContent=f.name.length>26?f.name.slice(0,24)+'…':f.name;
+    const r=new FileReader();
+    r.onload=e=>{const p=document.getElementById(pid);if(p){p.src=e.target.result;p.style.display='block'}document.getElementById(urlId).value=''};
+    r.readAsDataURL(f);
+  }
+}
+
+/* ============ BANNER CRUD ============ */
+function openBannerModal(data){
+  document.getElementById('bannerModal').classList.add('show');
+  document.getElementById('bannerFile').value='';
+  document.getElementById('bannerPreview').style.display='none';
+  document.getElementById('bannerFileLabel').textContent='Tap to choose image';
+  if(data){
+    document.getElementById('bannerModalTitle').textContent='Edit Banner';
+    document.getElementById('bannerEditId').value=data.id;
+    document.getElementById('bannerLabel').value=data.label||'';
+    document.getElementById('bannerTitle').value=data.title||'';
+    document.getElementById('bannerDesc').value=data.desc||'';
+    document.getElementById('bannerBtnText').value=data.btntext||'';
+    document.getElementById('bannerBtnCategory').value=data.btncategory||'';
+    document.getElementById('bannerImageUrl').value=data.image||'';
+    document.getElementById('bannerImageAlt').value='';
+    if(data.image){const p=document.getElementById('bannerPreview');p.src=data.image;p.style.display='block'}
+  }else{
+    document.getElementById('bannerModalTitle').textContent='Add Banner';
+    document.getElementById('bannerForm').reset();
+    document.getElementById('bannerEditId').value='';
+    document.getElementById('bannerImageUrl').value='';
+    document.getElementById('bannerImageAlt').value='';
+  }
+}
+function closeModal(id){document.getElementById(id).classList.remove('show')}
+
+async function saveBanner(e){
+  e.preventDefault();
+  showProgress('Saving banner','Uploading and updating');
+  updateProgress(10,'Preparing...');
+  try{
+    let imageUrl=document.getElementById('bannerImageUrl').value;
+    const f=document.getElementById('bannerFile');
+    if(f.files&&f.files.length){updateProgress(30,'Uploading image...');imageUrl=await uploadImage(f.files[0],0)}
+    if(!imageUrl)throw new Error('Please add an image');
+    updateProgress(70,'Reading data...');
+    const id=document.getElementById('bannerEditId').value;
+    const rec={label:document.getElementById('bannerLabel').value||'',title:document.getElementById('bannerTitle').value||'',desc:document.getElementById('bannerDesc').value||'',btntext:document.getElementById('bannerBtnText').value||'',btncategory:document.getElementById('bannerBtnCategory').value||'',image:imageUrl};
+    const fresh=await getJSON('banners.json');
+    const base=Array.isArray(fresh)?fresh:banners;
+    let updated;
+    if(id){updated=base.map(b=>String(b.id)===String(id)?{...b,...rec}:b)}
+    else{const nid=base.length?Math.max(...base.map(b=>Number(b.id)||0))+1:1;updated=base.concat([{id:nid,...rec}])}
+    updateProgress(85,'Saving...');
+    await pushFile('banners.json',toB64(JSON.stringify(updated,null,2)),id?'Update banner':'Add banner');
+    updateProgress(100,'Done!');
+    banners=updated;renderBanners();toast(id?'Banner updated':'Banner added');
+    closeModal('bannerModal');
+  }catch(err){toast('Error: '+err.message)}
+  finally{setTimeout(hideProgress,400)}
+}
+
+function editBanner(id){const b=banners.find(x=>String(x.id)===String(id));if(b)openBannerModal(b)}
+
+async function deleteBanner(id){
+  if(!confirm('Delete this banner?'))return;
+  showProgress('Deleting...','Updating GitHub');
+  try{
+    const fresh=await getJSON('banners.json');
+    const base=Array.isArray(fresh)?fresh:banners;
+    const updated=base.filter(b=>String(b.id)!==String(id));
+    updateProgress(50,'Saving...');
+    await pushFile('banners.json',toB64(JSON.stringify(updated,null,2)),'Delete banner');
+    updateProgress(100,'Done!');
+    banners=updated;renderBanners();toast('Banner deleted');
+  }catch(e){toast('Error: '+e.message)}
+  finally{setTimeout(hideProgress,400)}
+}
+
+/* ============ PRODUCT CRUD ============ */
+function handleProductFiles(input){
+  const f=input.files;if(!f||!f.length)return;
+  document.getElementById('productFileLabel').textContent='Tap to add more images';
+  const existing=productImages.slice();
+  productImages=[];
+  for(let i=0;i<f.length;i++){
+    (function(file){
+      const url=URL.createObjectURL(file);
+      productImages.push({local:true,file:file,url:url});
+    })(f[i]);
+  }
+  productImages=existing.concat(productImages);
+  renderProductThumbs();
+}
+
+function renderProductThumbs(){
+  const grid=document.getElementById('productThumbs');
+  grid.innerHTML='';
+  if(!productImages.length){
+    grid.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:12px;color:var(--muted);font-size:11.5px;">No images yet</div>';
+    return;
+  }
+  productImages.forEach((img,idx)=>{
+    const url=typeof img==='string'?img:img.url;
+    const cell=document.createElement('div');
+    cell.className='img-cell'+(idx===0?' cover':'');
+    cell.dataset.idx=idx;
+    cell.innerHTML=
+      '<img src="'+url+'">'+
+      '<span class="num">'+(idx+1)+'</span>'+
+      '<button type="button" class="rm" onclick="event.stopPropagation();removeProductImage('+idx+')"><i class="fa-solid fa-xmark"></i></button>'+
+      (idx===0?'<span class="badge">Cover</span>':'');
+    grid.appendChild(cell);
+  });
+  attachImgDrag();
+}
+function removeProductImage(i){productImages.splice(i,1);renderProductThumbs()}
+
+function openProductModal(data){
+  document.getElementById('productModal').classList.add('show');
+  document.getElementById('productFiles').value='';
+  document.getElementById('productFileLabel').textContent='Tap to add more images';
+  document.getElementById('productThumbs').innerHTML='';
+  productImages=[];
+  if(data){
+    document.getElementById('productModalTitle').textContent='Edit Product';
+    document.getElementById('productEditId').value=data.id;
+    document.getElementById('productName').value=data.name||'';
+    document.getElementById('productPrice').value=data.price||'';
+    document.getElementById('productDiscount').value=data.discount||'';
+    document.getElementById('productCategory').value=data.category||'Electronics';
+    document.getElementById('productDesc').value=data.desc||'';
+    document.getElementById('productSoldOut').checked=data.is_sold_out===true;
+    productImages=getImgs(data).slice();
+    renderProductThumbs();
+  }else{
+    document.getElementById('productModalTitle').textContent='Add Product';
+    document.getElementById('productForm').reset();
+    document.getElementById('productEditId').value='';
+    document.getElementById('productSoldOut').checked=false;
+    renderProductThumbs();
+  }
+}
+
+async function saveProduct(e){
+  e.preventDefault();
+  showProgress('Saving product','Please wait');
+  updateProgress(5,'Preparing...');
+  try{
+    const newUrls=[];
+    const locals=productImages.filter(x=>typeof x!=='string');
+    const keeps=productImages.filter(x=>typeof x==='string');
+    if(locals.length){
+      updateProgress(15,'Uploading '+locals.length+' image(s)...');
+      for(let i=0;i<locals.length;i++){
+        updateProgress(15+Math.round((i/locals.length)*55),'Uploading image '+(i+1)+' of '+locals.length+'...');
+        const url=await uploadImage(locals[i].file,i);
+        newUrls.push(url);
+      }
+    }
+    const keepUrls=keeps.slice();
+    const all=keepUrls.concat(newUrls);
+    if(!all.length)throw new Error('Add at least one image');
+    updateProgress(75,'Reading data...');
+    const id=document.getElementById('productEditId').value;
+    const rec={name:document.getElementById('productName').value,price:parseInt(document.getElementById('productPrice').value)||0,discount:parseInt(document.getElementById('productDiscount').value)||0,category:document.getElementById('productCategory').value,desc:document.getElementById('productDesc').value,is_sold_out:document.getElementById('productSoldOut').checked,image:all[0],images:all};
+    const fresh=await getJSON('products.json');
+    const base=Array.isArray(fresh)?fresh:products;
+    let updated;
+    if(id){updated=base.map(p=>String(p.id)===String(id)?{...p,...rec}:p)}
+    else{const nid=base.length?Math.max(...base.map(p=>Number(p.id)||0))+1:1;updated=base.concat([{id:nid,...rec}])}
+    updateProgress(90,'Saving...');
+    await pushFile('products.json',toB64(JSON.stringify(updated,null,2)),id?'Update product':'Add product');
+    updateProgress(100,'Done!');
+    products=updated;renderProducts();toast(id?'Product updated':'Product added');
+    closeModal('productModal');
+  }catch(err){toast('Error: '+err.message)}
+  finally{setTimeout(hideProgress,400)}
+}
+
+function editProduct(id){const p=products.find(x=>String(x.id)===String(id));if(p)openProductModal(p)}
+
+async function deleteProduct(id){
+  if(!confirm('Delete this product?'))return;
+  showProgress('Deleting...','Updating GitHub');
+  try{
+    const fresh=await getJSON('products.json');
+    const base=Array.isArray(fresh)?fresh:products;
+    const updated=base.filter(p=>String(p.id)!==String(id));
+    updateProgress(50,'Saving...');
+    await pushFile('products.json',toB64(JSON.stringify(updated,null,2)),'Delete product');
+    updateProgress(100,'Done!');
+    products=updated;renderProducts();toast('Product deleted');
+  }catch(e){toast('Error: '+e.message)}
+  finally{setTimeout(hideProgress,400)}
+}
+
+/* ============ EXPORT / IMPORT ============ */
+function exportData(){
+  const d={banners,products,notification:currentNotification,exportedAt:new Date().toISOString()};
+  const b=new Blob([JSON.stringify(d,null,2)],{type:'application/json'});
+  const u=URL.createObjectURL(b);
+  const a=document.createElement('a');a.href=u;a.download='pge_backup_'+new Date().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(u);
+  toast('Backup downloaded');
+}
+function importData(){
+  const inp=document.createElement('input');inp.type='file';inp.accept='.json';
+  inp.onchange=async e=>{
+    const f=e.target.files[0];if(!f)return;
+    const r=new FileReader();
+    r.onload=async ev=>{
+      try{
+        const d=JSON.parse(ev.target.result);
+        if(!d.banners||!d.products)throw new Error('Invalid file');
+        if(!confirm('Replace with '+d.products.length+' products and '+d.banners.length+' banners?'))return;
+        showProgress('Importing...','Updating');
+        updateProgress(30,'Banners...');
+        await pushFile('banners.json',toB64(JSON.stringify(d.banners,null,2)),'Import banners');
+        updateProgress(70,'Products...');
+        await pushFile('products.json',toB64(JSON.stringify(d.products,null,2)),'Import products');
+        updateProgress(100,'Done!');
+        banners=d.banners;products=d.products;
+        renderBanners();renderProducts();toast('Imported!');
+      }catch(err){toast('Error: '+err.message)}
+      finally{setTimeout(hideProgress,400)}
+    };
+    r.readAsText(f);
+  };
+  inp.click();
+}
+
+/* ============ PROGRESS ============ */
+function showProgress(title,sub){
+  document.getElementById('progressTitle').textContent=title||'Saving...';
+  document.getElementById('progressSub').textContent=sub||'Please wait';
+  document.getElementById('progressFill').style.width='0%';
+  document.getElementById('progressStatus').textContent='Starting...';
+  document.getElementById('progressOverlay').classList.add('show');
+}
+function updateProgress(p,s){
+  document.getElementById('progressFill').style.width=p+'%';
+  if(s)document.getElementById('progressStatus').textContent=s;
+}
+function hideProgress(){document.getElementById('progressOverlay').classList.remove('show')}
+
+/* ============ TOAST ============ */
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+document.querySelectorAll('.modal').forEach(m=>{
+  m.addEventListener('click',function(e){if(e.target===m)m.classList.remove('show')});
+});
+</script>
+</body>
+</html>
