@@ -23,7 +23,7 @@
       {
         "id": "b17906861674224dl",
         "name": "600ML 3.7",
-        "available": true
+        "available": false
       }
     ],
     "colors": [
@@ -37,7 +37,7 @@
         "id": "c1790685840765owo",
         "name": "Black",
         "hex": "#000000",
-        "available": true
+        "available": false
       }
     ]
   }
