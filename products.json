@@ -18,26 +18,32 @@
       {
         "id": "b1790686147121e4u",
         "name": "600ML 7.4V",
-        "available": true
+        "available": true,
+        "colors": [
+          "c1790694541570ly6",
+          "c1790694543625jwp"
+        ]
       },
       {
         "id": "b17906861674224dl",
         "name": "600ML 3.7",
-        "available": false
+        "available": true,
+        "colors": [
+          "c1790694541570ly6",
+          "c1790694543625jwp"
+        ]
       }
     ],
     "colors": [
       {
-        "id": "c1790685838227pxc",
+        "id": "c1790694541570ly6",
         "name": "White",
-        "hex": "#000000",
         "available": true
       },
       {
-        "id": "c1790685840765owo",
+        "id": "c1790694543625jwp",
         "name": "Black",
-        "hex": "#000000",
-        "available": false
+        "available": true
       }
     ]
   }
