@@ -11,8 +11,8 @@
     "images": [
       "https://raw.githubusercontent.com/nafisaaliyuhabeeb-crypto/pge-shop/main/images/1790677153000_0_nf8i7tk_file_00000000945081f49ea2261a3ba0ee5e.jpg",
       "https://raw.githubusercontent.com/nafisaaliyuhabeeb-crypto/pge-shop/main/images/1790677160722_2_5fi7vqb_file_0000000050dc81f48c8b150403ddaef9.jpg",
-      "https://raw.githubusercontent.com/nafisaaliyuhabeeb-crypto/pge-shop/main/images/1790677164822_3_8bpdwmw_file_0000000092c081f481006cbfaa90bd08.jpg",
-      "https://raw.githubusercontent.com/nafisaaliyuhabeeb-crypto/pge-shop/main/images/1790677157262_1_0ucfkqs_file_000000008dd48210b2a6cb7c3998bb4a.jpg"
+      "https://raw.githubusercontent.com/nafisaaliyuhabeeb-crypto/pge-shop/main/images/1790677157262_1_0ucfkqs_file_000000008dd48210b2a6cb7c3998bb4a.jpg",
+      "https://raw.githubusercontent.com/nafisaaliyuhabeeb-crypto/pge-shop/main/images/1790677164822_3_8bpdwmw_file_0000000092c081f481006cbfaa90bd08.jpg"
     ],
     "brands": [
       {
@@ -29,8 +29,7 @@
         "name": "600ML 3.7",
         "available": true,
         "colors": [
-          "c1790694541570ly6",
-          "c1790694543625jwp"
+          "c1790694541570ly6"
         ]
       }
     ],
