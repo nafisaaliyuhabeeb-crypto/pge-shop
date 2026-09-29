@@ -14,7 +14,18 @@
       "https://raw.githubusercontent.com/nafisaaliyuhabeeb-crypto/pge-shop/main/images/1790677157262_1_0ucfkqs_file_000000008dd48210b2a6cb7c3998bb4a.jpg",
       "https://raw.githubusercontent.com/nafisaaliyuhabeeb-crypto/pge-shop/main/images/1790677164822_3_8bpdwmw_file_0000000092c081f481006cbfaa90bd08.jpg"
     ],
-    "brands": [],
+    "brands": [
+      {
+        "id": "b1790686147121e4u",
+        "name": "600ML 7.4V",
+        "available": true
+      },
+      {
+        "id": "b17906861674224dl",
+        "name": "600ML 3.7",
+        "available": true
+      }
+    ],
     "colors": [
       {
         "id": "c1790685838227pxc",
