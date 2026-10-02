@@ -60,5 +60,20 @@
     ],
     "brands": [],
     "colors": []
+  },
+  {
+    "id": 3,
+    "name": "Vvv",
+    "price": 88,
+    "discount": 88,
+    "category": "Electronics",
+    "desc": "Xc",
+    "is_sold_out": false,
+    "image": "https://cdn.jsdelivr.net/gh/nafisaaliyuhabeeb-crypto/pge-shop@main/images/1790984768878_0_iyhbl2z_2_145621_com.xunmeng.pinduoduo.jpg",
+    "images": [
+      "https://cdn.jsdelivr.net/gh/nafisaaliyuhabeeb-crypto/pge-shop@main/images/1790984768878_0_iyhbl2z_2_145621_com.xunmeng.pinduoduo.jpg"
+    ],
+    "brands": [],
+    "colors": []
   }
 ]
