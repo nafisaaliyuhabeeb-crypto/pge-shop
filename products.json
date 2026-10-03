@@ -45,5 +45,28 @@
         "available": true
       }
     ]
+  },
+  {
+    "id": 2,
+    "name": "Type -C Earphone Adapter ",
+    "price": 12000,
+    "discount": 15,
+    "category": "Electronics",
+    "desc": "High Quality product",
+    "is_sold_out": false,
+    "image": "https://cdn.jsdelivr.net/gh/nafisaaliyuhabeeb-crypto/pge-shop@main/images/1791030800635_0_9vaww6v_000000e17081f4bc64fd4b212dd92c.jpg",
+    "images": [
+      "https://cdn.jsdelivr.net/gh/nafisaaliyuhabeeb-crypto/pge-shop@main/images/1791030800635_0_9vaww6v_000000e17081f4bc64fd4b212dd92c.jpg",
+      "https://cdn.jsdelivr.net/gh/nafisaaliyuhabeeb-crypto/pge-shop@main/images/1791030804263_1_rlot4kq_00000012088210a7fc0e039ab9043e.jpg",
+      "https://cdn.jsdelivr.net/gh/nafisaaliyuhabeeb-crypto/pge-shop@main/images/1791030807966_2_91qui4m_0000001a6081f49941439a173ef485.jpg"
+    ],
+    "brands": [],
+    "colors": [
+      {
+        "id": "c1791030790344lzy",
+        "name": "White",
+        "available": true
+      }
+    ]
   }
 ]
