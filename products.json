@@ -45,20 +45,5 @@
         "available": true
       }
     ]
-  },
-  {
-    "id": 2,
-    "name": "Xxjj",
-    "price": 3583,
-    "discount": 68,
-    "category": "Electronics",
-    "desc": "Djdu",
-    "is_sold_out": false,
-    "image": "https://cdn.jsdelivr.net/gh/nafisaaliyuhabeeb-crypto/pge-shop@main/images/1790982532484_0_it6j67j_0000005bf88210936eb8526a16d01d.jpg",
-    "images": [
-      "https://cdn.jsdelivr.net/gh/nafisaaliyuhabeeb-crypto/pge-shop@main/images/1790982532484_0_it6j67j_0000005bf88210936eb8526a16d01d.jpg"
-    ],
-    "brands": [],
-    "colors": []
   }
 ]
