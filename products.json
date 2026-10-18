@@ -68,5 +68,20 @@
         "available": true
       }
     ]
+  },
+  {
+    "id": 3,
+    "name": "Cover",
+    "price": 250,
+    "discount": 32,
+    "category": "Electronics",
+    "desc": "High quality ",
+    "is_sold_out": false,
+    "image": "https://cdn.jsdelivr.net/gh/nafisaaliyuhabeeb-crypto/pge-shop@main/images/1792332257379_0_kpr32au_IMG_20261016_154203.jpg",
+    "images": [
+      "https://cdn.jsdelivr.net/gh/nafisaaliyuhabeeb-crypto/pge-shop@main/images/1792332257379_0_kpr32au_IMG_20261016_154203.jpg"
+    ],
+    "brands": [],
+    "colors": []
   }
 ]
